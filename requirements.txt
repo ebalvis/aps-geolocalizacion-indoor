@@ -1,0 +1,12 @@
+# Necesarias para el servidor, el simulador y el visualizador
+paho-mqtt>=1.6
+python-dotenv>=1.0
+pyyaml>=6.0
+pillow>=10.4
+numpy>=1.26
+
+# Solo para regenerar las texturas de cobertura con
+# visualizer/gen_heatmap_texturas.py. Las texturas ya vienen en el repositorio,
+# así que puedes omitir estas dos si no vas a cambiar el edificio ni el modelo.
+matplotlib>=3.7
+scipy>=1.11

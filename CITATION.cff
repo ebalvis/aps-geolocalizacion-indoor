@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "Si usas este material, cítalo así."
+title: "Geolocalización indoor multisensor (APS): plataforma abierta de práctica"
+abstract: >-
+  Plataforma abierta para una práctica de laboratorio de Adquisición y
+  Procesamiento de la Señal (Grado en Inteligencia Artificial, Universidade de Vigo): localización en interiores por WiFi, IMU y
+  barómetro, con firmware para M5StickC, servidor de estimación en Python y
+  visualizador 3D web.
+type: software
+authors:
+  - family-names: "Balvís Outeiriño"
+    given-names: "Eduardo"
+    affiliation: "Universidade de Vigo"
+  - family-names: "Novo-Lourés"
+    given-names: "María"
+    affiliation: "Universidade de Vigo"
+  - family-names: "García Lourenço"
+    given-names: "Anália M."
+    affiliation: "Universidade de Vigo"
+license:
+  - MIT
+  - CC-BY-4.0
+version: "1.0.0"
+date-released: 2026-07-25
+references:
+  - type: conference-paper
+    title: >-
+      Construir para comprender: geolocalización indoor multisensor como
+      proyecto integrador en Adquisición y Procesamiento de la Señal
+    authors:
+      - family-names: "Balvís Outeiriño"
+        given-names: "Eduardo"
+      - family-names: "Novo-Lourés"
+        given-names: "María"
+      - family-names: "García Lourenço"
+        given-names: "Anália M."
+    collection-title: "EDUTRENDS 2026"
+    year: 2026

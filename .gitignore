@@ -1,0 +1,21 @@
+# Credenciales: NUNCA subir el .env real
+.env
+
+# Configuración local del edificio (usa config.example.yaml como plantilla)
+config.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Salidas y temporales
+outputs/
+*.log
+.DS_Store
+Thumbs.db
+
+# Capturas WiFi reales generadas por el registrador (no publicar)
+wifi_log_*.csv

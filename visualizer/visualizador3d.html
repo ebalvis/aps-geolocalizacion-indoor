@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geolocalización 3D</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#0a0a0f; overflow:hidden; font-family:'Segoe UI',sans-serif; }
+  #canvas { display:block; }
+
+  #panel {
+    position:fixed; top:16px; left:16px; width:240px;
+    background:rgba(0,20,40,0.85); border:1px solid #0af;
+    border-radius:8px; padding:14px; color:#dde; backdrop-filter:blur(4px);
+    font-size:13px; line-height:1.8;
+  }
+  #panel h2 { color:#0af; font-size:14px; margin-bottom:8px;
+              border-bottom:1px solid #0af3; padding-bottom:6px; }
+  .val  { color:#7ff; font-weight:600; }
+  .ok   { color:#4f8; }
+  .warn { color:#fa4; }
+  .err  { color:#f44; }
+
+  #legend {
+    position:fixed; bottom:60px; left:16px;
+    background:rgba(0,20,40,0.85); border:1px solid #0af3;
+    border-radius:8px; padding:10px 14px; color:#aac; font-size:12px;
+  }
+  #legend div { display:flex; align-items:center; gap:8px; margin:3px 0; }
+  .dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
+
+  #controls {
+    position:fixed; top:16px; right:16px;
+    background:rgba(0,20,40,0.85); border:1px solid #0af3;
+    border-radius:8px; padding:10px 14px; color:#aac; font-size:11px;
+    line-height:2;
+  }
+
+  /* ── Overlay configuración ─────────────────────────────────────── */
+  #cfg-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,20,0.92);
+    display:none;
+    align-items:center; justify-content:center;
+    z-index:200;
+  }
+  #cfg-box {
+    background:rgba(0,20,45,0.97);
+    border:1px solid #0af;
+    border-radius:14px;
+    padding:36px 44px;
+    text-align:center;
+    color:#dde;
+    min-width:320px;
+    box-shadow:0 0 40px rgba(0,170,255,0.15);
+  }
+  #cfg-box h2   { color:#0af; font-size:18px; margin-bottom:6px; }
+  #cfg-box p    { color:#789; margin-bottom:24px; font-size:13px; line-height:1.6; }
+  #cfg-grupo    {
+    width:100%; padding:12px 16px;
+    background:rgba(0,40,80,0.8);
+    border:1px solid rgba(0,170,255,0.3);
+    border-radius:8px;
+    color:#fff; font-size:22px; text-align:center; letter-spacing:2px;
+    outline:none; margin-bottom:16px; text-transform:uppercase;
+  }
+  #cfg-grupo:focus { border-color:#0af; box-shadow:0 0 8px rgba(0,170,255,0.3); }
+  #cfg-btn {
+    width:100%; padding:12px;
+    background:linear-gradient(135deg,#005599,#0077cc);
+    border:none; border-radius:8px;
+    color:#fff; font-size:15px; font-weight:600;
+    cursor:pointer; transition:background .2s;
+  }
+  #cfg-btn:hover { background:linear-gradient(135deg,#0077cc,#0099ff); }
+  #cfg-error { color:#f44; font-size:12px; margin-top:10px; display:none; }
+
+  #btn-reconfig {
+    position:fixed; bottom:16px; left:16px;
+    background:rgba(0,20,40,0.85); border:1px solid rgba(0,170,255,0.3);
+    border-radius:8px; padding:8px 14px; color:#778;
+    font-size:12px; cursor:pointer; transition:all .2s;
+    z-index:10;
+  }
+  #btn-reconfig:hover { border-color:#0af; color:#0af; }
+
+  #btn-cobertura {
+    position:fixed; bottom:16px; left:150px;
+    background:rgba(0,20,40,0.85); border:1px solid rgba(0,170,255,0.3);
+    border-radius:8px; padding:8px 14px; color:#778;
+    font-size:12px; cursor:pointer; transition:all .2s;
+    z-index:10;
+  }
+  #btn-cobertura:hover { border-color:#0af; color:#0af; }
+  #btn-cobertura.on {
+    border-color:#00e0a0; color:#0a0f14;
+    background:linear-gradient(90deg,#00d9a0,#22c0e0);
+    font-weight:600;
+  }
+
+  /* ── Branding APS ───────────────────────────────────────────── */
+  #branding {
+    position:fixed; bottom:16px; right:16px;
+    background:rgba(0,15,35,0.88);
+    border:1px solid rgba(0,170,255,0.18);
+    border-radius:12px; padding:10px 16px 10px 12px;
+    display:flex; align-items:center; gap:11px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 4px 24px rgba(0,0,0,0.4);
+    z-index:10;
+  }
+  #branding img { width:44px; height:44px; border-radius:50%; flex-shrink:0; }
+  #branding-sep {
+    width:1px; height:38px;
+    background:linear-gradient(to bottom, transparent, rgba(0,170,255,0.3), transparent);
+  }
+  #branding-text { line-height:1.55; }
+  #branding-course {
+    font-size:9.5px; letter-spacing:.6px; text-transform:uppercase;
+    color:rgba(0,170,255,0.55); font-weight:600; margin-bottom:1px;
+  }
+  #branding-subject {
+    font-size:11px; color:rgba(170,200,220,0.7); margin-top:2px;
+    max-width:230px; line-height:1.35;
+  }
+</style>
+</head>
+<body>
+
+<!-- Overlay configuración -->
+<div id="cfg-overlay">
+  <div id="cfg-box">
+    <h2>📡 Geolocalización Indoor</h2>
+    <p>Introduce el ID de tu grupo para<br>conectar y visualizar tu posición</p>
+    <input id="cfg-grupo" type="text" placeholder="Ej: G3"
+           maxlength="20" autocomplete="off" spellcheck="false">
+    <button id="cfg-btn">Conectar</button>
+    <div id="cfg-error">Introduce un ID de grupo válido</div>
+    <div id="cfg-topic-box" style="display:none;margin-top:18px;padding:12px 14px;background:rgba(0,40,80,0.6);border:1px solid rgba(0,170,255,0.2);border-radius:8px;text-align:left">
+      <div style="font-size:11px;color:#567;margin-bottom:6px">El servidor debe publicar los resultados en:</div>
+      <div id="cfg-topic-val" style="font-family:monospace;font-size:12px;color:#0af;word-break:break-all"></div>
+      <div style="font-size:10px;color:#456;margin-top:8px">Ejemplo: <code style="color:#678">python -m src.main mqtt-serve --grupo <span id="cfg-topic-grupo"></span></code></div>
+    </div>
+  </div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div id="panel">
+  <h2>📡 Geolocalización Indoor</h2>
+  <div>Grupo: <span id="p-grupo" class="val">—</span></div>
+  <div>Estado MQTT: <span id="mqtt-st" class="warn">Desconectado</span></div>
+  <div style="margin:6px 0;padding:6px 8px;background:rgba(0,40,80,0.5);border-radius:5px;border-left:2px solid #0af5">
+    <div style="font-size:10px;color:#567;margin-bottom:2px">Topic suscrito:</div>
+    <div id="p-topic" style="font-size:10px;color:#0af;word-break:break-all;font-family:monospace">—</div>
+  </div>
+  <div>Planta: <span id="p-nivel" class="val">—</span></div>
+  <div>X: <span id="p-x" class="val">—</span> m</div>
+  <div>Y: <span id="p-y" class="val">—</span> m</div>
+  <div>Método: <span id="p-met" class="val">—</span></div>
+  <div>APs: <span id="p-aps" class="val">—</span></div>
+  <div>IMU: <span id="p-imu" class="val">—</span></div>
+  <div>Actualizado: <span id="p-ts" class="val">—</span></div>
+  <button id="btn-salir" style="margin-top:10px;width:100%;padding:7px;background:rgba(180,40,40,0.25);border:1px solid rgba(255,80,80,0.4);border-radius:6px;color:#f88;font-size:12px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(180,40,40,0.5)'" onmouseout="this.style.background='rgba(180,40,40,0.25)'">↩ Salir / Cambiar grupo</button>
+</div>
+
+<div id="legend">
+  <div><span class="dot" style="background:#00ff88"></span> Posición actual (QUIETO)</div>
+  <div><span class="dot" style="background:#ffaa00"></span> Posición actual (MOVIL)</div>
+  <div><span class="dot" style="background:#4488ff;opacity:.7"></span> Historial</div>
+</div>
+
+<div id="controls">
+  🖱 Arrastrar: rotar<br>
+  🖱 Rueda: zoom<br>
+  🖱 Drcha+arrastrar: pan<br>
+  R: restablecer vista<br>
+  <span id="keys-plantas"></span>
+  C: cobertura WiFi
+</div>
+
+<button id="btn-cobertura">📶 Cobertura WiFi</button>
+<button id="btn-reconfig">⚙ Cambiar grupo</button>
+
+<!-- Rótulo del edificio. El texto sale de config.yaml; el logo es opcional y se
+     oculta solo si no existe visualizer/logo.png. -->
+<div id="branding">
+  <img src="/logo.png" alt="" onerror="this.style.display='none'">
+  <div id="branding-sep"></div>
+  <div id="branding-text">
+    <div id="branding-course">—</div>
+    <div id="branding-subject"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
+
+<script>
+'use strict';
+
+// ── Configuración ─────────────────────────────────────────────────────────
+// Todo lo que depende del edificio llega de /config.json, que el servidor
+// construye a partir de config.yaml. Aquí solo hay valores de arranque para
+// que la escena exista mientras se carga, y los que no dependen del edificio.
+// No cablees plantas ni rutas de planos: se declaran en config.yaml.
+const CFG = {
+  mqtt: { host: '', port: 8884, user: '', pass: '', topic: '' },
+  coordOffset: { x: 0, y: 0 },
+  edificio: { nombre: '', descripcion: '' },
+  build: { w: 100, d: 50, floorH: 14 },   // sustituido por config.yaml
+  textures: {},   // id de planta -> URL del plano
+  heatmaps: {},   // id de planta -> URL de la textura de cobertura
+  floorZ  : {},   // id de planta -> altura en metros
+  etiquetas: {},  // id de planta -> nombre legible
+  trailLen : 60,
+  lerpSpeed: 0.12,
+};
+
+// Color de reserva de cada planta, para cuando el plano no carga. Se reparte el
+// tono por el círculo cromático según el índice, así funciona con N plantas.
+function colorPlanta(i, total) {
+  const c = new THREE.Color();
+  c.setHSL((0.58 + i / Math.max(total, 1) * 0.55) % 1, 0.45, 0.22);
+  return c;
+}
+
+// ── Three.js ──────────────────────────────────────────────────────────────
+const canvas   = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0f);
+scene.fog = new THREE.FogExp2(0x0a0a0f, 0.006);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 4000);
+
+const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+orbitControls.enableDamping = true;
+orbitControls.dampingFactor = 0.06;
+
+// Encuadre inicial, deducido del tamaño del edificio. Se recalcula cuando
+// llega config.json, porque hasta entonces no se sabe cuánto mide.
+function vistaGeneral() {
+  const alturas = Object.values(CFG.floorZ);
+  const techo = (alturas.length ? Math.max(...alturas) : 0) + CFG.build.floorH;
+  return {
+    pos   : { x: BW / 2, y: techo * 1.6 + BD * 0.5, z: BD * 2.0 + BW * 0.35 },
+    target: { x: BW / 2, y: techo * 0.45, z: -BD / 2 },
+  };
+}
+
+function aplicarVista(v) {
+  camera.position.set(v.pos.x, v.pos.y, v.pos.z);
+  orbitControls.target.set(v.target.x, v.target.y, v.target.z);
+  orbitControls.minDistance = Math.max(4, BW * 0.08);
+  orbitControls.maxDistance = Math.max(200, BW * 5);
+  orbitControls.update();
+}
+
+// ── Iluminación ───────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x223355, 1.2));
+const sun = new THREE.DirectionalLight(0xaaccff, 0.8);
+sun.position.set(50, 80, 30);
+sun.castShadow = true;
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0x334466, 0.4);
+fill.position.set(-30, 20, -20);
+scene.add(fill);
+
+let grid = null;
+
+// ── Plantas del edificio ──────────────────────────────────────────────────
+const loader    = new THREE.TextureLoader();
+// Dimensiones del edificio. Se fijan al cargar config.json; los valores de
+// CFG.build son solo el arranque.
+let BW = CFG.build.w, BD = CFG.build.d, FH = CFG.build.floorH;
+const simetria  = {};
+const floorMats = {};
+const heatMats  = {};   // materiales de la capa de cobertura WiFi por planta
+const heatMeshes = {};  // mallas de la capa de cobertura por planta
+let coberturaOn = false;
+let floorOrder = [];    // ids de planta ordenados de abajo arriba
+const OPACITY = { current: 0.75, below: 0.40, above: 0.10 };
+
+// Rejilla de suelo, dimensionada según el edificio
+function crearRejilla() {
+  if (grid) scene.remove(grid);
+  const lado = Math.max(BW, BD) * 1.6;
+  grid = new THREE.GridHelper(lado, Math.round(lado / 4), 0x112233, 0x0d1822);
+  grid.position.set(BW / 2, -0.05, -BD / 2);
+  scene.add(grid);
+}
+
+function actualizarTransparencia(nivelActual) {
+  const idx = floorOrder.indexOf(nivelActual);
+  floorOrder.forEach((nivel, i) => {
+    const mat = floorMats[nivel];
+    if (mat) {
+      mat.opacity = i === idx ? OPACITY.current : i < idx ? OPACITY.below : OPACITY.above;
+      mat.needsUpdate = true;
+    }
+    const hm = heatMeshes[nivel];
+    if (hm) hm.visible = coberturaOn;
+  });
+}
+
+function toggleCobertura() {
+  coberturaOn = !coberturaOn;
+  floorOrder.forEach(nivel => {
+    const hm = heatMeshes[nivel];
+    if (hm) hm.visible = coberturaOn;
+  });
+  const btn = document.getElementById('btn-cobertura');
+  if (btn) {
+    btn.classList.toggle('on', coberturaOn);
+    btn.textContent = coberturaOn ? '📶 Cobertura WiFi: ON' : '📶 Cobertura WiFi';
+  }
+}
+
+function crearPlanta(nivel, zY, idx, total) {
+  const geo = new THREE.PlaneGeometry(BW, BD);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0xffffff, transparent: true, opacity: OPACITY.current,
+    side: THREE.DoubleSide, roughness: 0.8,
+  });
+  floorMats[nivel] = mat;
+  const planoUrl = CFG.textures[nivel];
+  if (planoUrl) {
+    loader.load(
+      planoUrl,
+      tex => {
+        tex.flipY = false;
+        const sim = simetria[nivel] || { x: false, y: false };
+        if (sim.x) { tex.wrapS = THREE.RepeatWrapping; tex.repeat.x = -1; tex.offset.x = 1; }
+        if (sim.y) { tex.wrapT = THREE.RepeatWrapping; tex.repeat.y = -1; tex.offset.y = 1; }
+        mat.map = tex;
+        mat.needsUpdate = true;
+      },
+      undefined,
+      () => {
+        // El plano no cargó: se deja la planta en un color plano para que el
+        // edificio siga siendo legible en vez de desaparecer.
+        console.warn(`No se pudo cargar el plano de la planta ${nivel}: ${planoUrl}`);
+        mat.color.copy(colorPlanta(idx, total));
+      }
+    );
+  } else {
+    mat.color.copy(colorPlanta(idx, total));
+  }
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(BW / 2, zY, -BD / 2);
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  // ── Capa de cobertura WiFi (overlay heatmap, oculta por defecto) ──────────
+  const heatUrl = CFG.heatmaps && CFG.heatmaps[nivel];
+  if (heatUrl) {
+    const heatMat = new THREE.MeshBasicMaterial({
+      transparent: true, opacity: 0.9, side: THREE.DoubleSide,
+      depthWrite: false, blending: THREE.NormalBlending,
+    });
+    heatMats[nivel] = heatMat;
+    loader.load(
+      heatUrl,
+      tex => {
+        tex.flipY = false;
+        const sim = simetria[nivel] || { x: false, y: false };
+        if (sim.x) { tex.wrapS = THREE.RepeatWrapping; tex.repeat.x = -1; tex.offset.x = 1; }
+        if (sim.y) { tex.wrapT = THREE.RepeatWrapping; tex.repeat.y = -1; tex.offset.y = 1; }
+        heatMat.map = tex;
+        heatMat.needsUpdate = true;
+      },
+      undefined,
+      () => { heatMat.visible = false; }
+    );
+    const heatMesh = new THREE.Mesh(new THREE.PlaneGeometry(BW, BD), heatMat);
+    heatMesh.rotation.x = -Math.PI / 2;
+    heatMesh.position.set(BW / 2, zY + 0.08, -BD / 2);  // ligeramente sobre la planta
+    heatMesh.visible = false;
+    heatMeshes[nivel] = heatMesh;
+    scene.add(heatMesh);
+  }
+
+  const border = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(BW, 0.05, BD)),
+    new THREE.LineBasicMaterial({ color: 0x0066aa })
+  );
+  border.position.set(BW / 2, zY, -BD / 2);
+  scene.add(border);
+
+  const sprite = makeTextSprite(nivel, { r: 0, g: 170, b: 255 });
+  sprite.position.set(-3, zY + 0.5, 3);
+  scene.add(sprite);
+
+  [[0, 0], [BW, 0], [0, -BD], [BW, -BD]].forEach(([px, pz]) => {
+    const pil = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.25, 0.25, FH, 8),
+      new THREE.MeshStandardMaterial({ color: 0x1a3050 })
+    );
+    pil.position.set(px, zY + FH / 2, pz);
+    scene.add(pil);
+  });
+}
+
+// ── Marcador ──────────────────────────────────────────────────────────────
+const markerGeo = new THREE.SphereGeometry(0.8, 32, 32);
+const markerMat = new THREE.MeshStandardMaterial({ color: 0x00ff88, emissive: 0x00aa44, roughness: 0.3 });
+const marker = new THREE.Mesh(markerGeo, markerMat);
+marker.castShadow = true;
+scene.add(marker);
+
+const haloGeo = new THREE.RingGeometry(1.1, 1.6, 32);
+const haloMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, side: THREE.DoubleSide, transparent: true, opacity: 0.35 });
+const halo = new THREE.Mesh(haloGeo, haloMat);
+halo.rotation.x = -Math.PI / 2;
+scene.add(halo);
+
+// ── Trail ─────────────────────────────────────────────────────────────────
+const trailPts = [];
+
+function makeGlowTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0,    'rgba(255,255,255,1.0)');
+  g.addColorStop(0.35, 'rgba(255,255,255,0.7)');
+  g.addColorStop(0.7,  'rgba(255,255,255,0.15)');
+  g.addColorStop(1,    'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+
+const trailGeo  = new THREE.BufferGeometry();
+const trailLine = new THREE.Line(trailGeo,
+  new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false })
+);
+scene.add(trailLine);
+
+const trailDotGeo = new THREE.BufferGeometry();
+const trailDots   = new THREE.Points(trailDotGeo, new THREE.PointsMaterial({
+  vertexColors: true, sizeAttenuation: true, size: 2.8,
+  transparent: true, depthWrite: false, map: makeGlowTexture(),
+}));
+scene.add(trailDots);
+
+function updateTrail() {
+  const n = trailPts.length;
+  if (n < 2) return;
+  const pos = new Float32Array(n * 3);
+  const col = new Float32Array(n * 3);
+  const [hR, hG, hB] = quieto ? [0.0, 1.0, 0.53] : [1.0, 0.67, 0.0];
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1);
+    const v = trailPts[i];
+    pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z;
+    col[i * 3]     = t * hR + (1 - t) * 0.05;
+    col[i * 3 + 1] = t * hG + (1 - t) * 0.12;
+    col[i * 3 + 2] = t * hB + (1 - t) * 0.45;
+  }
+  const posAttr = new THREE.Float32BufferAttribute(pos, 3);
+  const colAttr = new THREE.Float32BufferAttribute(col, 3);
+  trailGeo.setAttribute('position', posAttr);
+  trailGeo.setAttribute('color',    colAttr);
+  trailGeo.setDrawRange(0, n);
+  trailGeo.computeBoundingSphere();
+  trailDotGeo.setAttribute('position', posAttr.clone());
+  trailDotGeo.setAttribute('color',    colAttr.clone());
+  trailDotGeo.setDrawRange(0, n);
+  trailDotGeo.computeBoundingSphere();
+}
+
+// ── Animación ─────────────────────────────────────────────────────────────
+const target  = { x: 0, y: 0, z: 0 };
+const current = { x: 0, y: 0, z: 0 };
+let lastAddedTrail = null;
+let quieto = true;
+
+// Coloca el marcador en el centro de la planta más baja. Se llama al arrancar,
+// cuando ya se conocen las dimensiones y las plantas.
+function centrarMarcador() {
+  const base = floorOrder.length ? CFG.floorZ[floorOrder[0]] : 0;
+  target.x = current.x = BW / 2;
+  target.y = current.y = base + 2;
+  target.z = current.z = -BD / 2;
+  marker.position.set(current.x, current.y, current.z);
+}
+
+function onResultado(data) {
+  const nivel = data.nivel || floorOrder[0];
+  const flZ   = CFG.floorZ[nivel] ?? 0;
+  target.x = Number(data.x) + CFG.coordOffset.x;
+  target.y = flZ + 2.0;
+  target.z = -(Number(data.y) + CFG.coordOffset.y);
+  quieto = data.quieto !== false;
+  actualizarTransparencia(nivel);
+  updateTrail();
+  document.getElementById('p-nivel').textContent = nivel;
+  document.getElementById('p-x').textContent     = Number(data.x).toFixed(1);
+  document.getElementById('p-y').textContent     = Number(data.y).toFixed(1);
+  document.getElementById('p-met').textContent   = (data.metodo || '—').toUpperCase().slice(0, 3);
+  document.getElementById('p-aps').textContent   = data.n_aps || '—';
+  document.getElementById('p-imu').textContent   = quieto ? '🟢 QUIETO' : '🟡 MOVIL';
+  document.getElementById('p-ts').textContent    = new Date().toLocaleTimeString();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  orbitControls.update();
+  const L = CFG.lerpSpeed;
+  current.x += (target.x - current.x) * L;
+  current.y += (target.y - current.y) * L;
+  current.z += (target.z - current.z) * L;
+  marker.position.set(current.x, current.y, current.z);
+  halo.position.set(current.x, current.y - 0.95, current.z);
+  const col = quieto ? 0x00ff88 : 0xffaa00;
+  markerMat.color.setHex(col);
+  markerMat.emissive.setHex(quieto ? 0x00aa44 : 0xaa5500);
+  haloMat.color.setHex(col);
+  const cv = new THREE.Vector3(current.x, current.y, current.z);
+  if (!lastAddedTrail || cv.distanceTo(lastAddedTrail) > 0.3) {
+    trailPts.push(cv.clone());
+    if (trailPts.length > CFG.trailLen) trailPts.shift();
+    updateTrail();
+    lastAddedTrail = cv;
+  }
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'r' || e.key === 'R') { aplicarVista(vistaGeneral()); return; }
+  if (e.key === 'c' || e.key === 'C') { toggleCobertura(); return; }
+
+  // Teclas 1..9 encuadran la planta n-ésima contando de abajo arriba. Con más
+  // de nueve plantas, las restantes se alcanzan orbitando con el ratón.
+  const n = parseInt(e.key, 10);
+  if (Number.isInteger(n) && n >= 1 && n <= floorOrder.length) {
+    const z = CFG.floorZ[floorOrder[n - 1]];
+    aplicarVista({
+      pos   : { x: BW / 2, y: z + FH * 1.8, z: BD * 0.75 },
+      target: { x: BW / 2, y: z, z: -BD / 2 },
+    });
+  }
+});
+
+function makeTextSprite(text, color) {
+  const c  = document.createElement('canvas');
+  c.width  = 128; c.height = 48;
+  const cx = c.getContext('2d');
+  cx.fillStyle = 'rgba(0,20,40,0.7)';
+  cx.fillRect(0, 0, 128, 48);
+  cx.font = 'bold 28px sans-serif';
+  cx.fillStyle = `rgb(${color.r},${color.g},${color.b})`;
+  cx.textAlign = 'center';
+  cx.fillText(text, 64, 34);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+  const sp  = new THREE.Sprite(mat);
+  sp.scale.set(4, 1.5, 1);
+  return sp;
+}
+
+// ── MQTT ──────────────────────────────────────────────────────────────────
+let activeClient = null;
+
+function mqttConnect() {
+  if (activeClient) {
+    try { activeClient.disconnect(); } catch (_) {}
+    activeClient = null;
+  }
+
+  if (!CFG.mqtt.host) {
+    document.getElementById('mqtt-st').textContent = 'Sin config servidor';
+    document.getElementById('mqtt-st').className = 'err';
+    return;
+  }
+
+  const clientId = 'vis3d_' + Math.floor(Math.random() * 99999);
+  const client   = new Paho.Client(CFG.mqtt.host, CFG.mqtt.port, clientId);
+  activeClient   = client;
+
+  client.onConnectionLost = () => {
+    if (client !== activeClient) return;
+    document.getElementById('mqtt-st').textContent = 'Desconectado';
+    document.getElementById('mqtt-st').className = 'err';
+    setTimeout(() => { if (client === activeClient) mqttConnect(); }, 5000);
+  };
+
+  client.onMessageArrived = msg => {
+    try { onResultado(JSON.parse(msg.payloadString)); }
+    catch (e) { console.warn('JSON inválido:', e); }
+  };
+
+  client.connect({
+    useSSL           : true,
+    userName         : CFG.mqtt.user,
+    password         : CFG.mqtt.pass,
+    keepAliveInterval: 30,
+    onSuccess: () => {
+      client.subscribe(CFG.mqtt.topic);
+      document.getElementById('mqtt-st').textContent = 'Conectado ✓';
+      document.getElementById('mqtt-st').className = 'ok';
+    },
+    onFailure: err => {
+      document.getElementById('mqtt-st').textContent = 'Error: ' + (err.errorMessage || err.errorCode);
+      document.getElementById('mqtt-st').className = 'err';
+      setTimeout(() => { if (client === activeClient) mqttConnect(); }, 6000);
+    },
+  });
+
+  document.getElementById('mqtt-st').textContent = 'Conectando...';
+  document.getElementById('mqtt-st').className = 'warn';
+}
+
+// ── Gestión de grupo ──────────────────────────────────────────────────────
+function aplicarGrupo(grupo) {
+  grupo = grupo.trim().toUpperCase();
+  localStorage.setItem('aps_grupo', grupo);
+  CFG.mqtt.topic = `indoor_geolocation/${grupo}/location/result`;
+  document.getElementById('p-grupo').textContent = grupo;
+  document.getElementById('p-topic').textContent = CFG.mqtt.topic;
+  document.getElementById('cfg-overlay').style.display = 'none';
+  trailPts.length = 0;
+  mqttConnect();
+}
+
+function mostrarOverlayGrupo() {
+  if (activeClient) {
+    try { activeClient.disconnect(); } catch (_) {}
+    activeClient = null;
+  }
+  document.getElementById('mqtt-st').textContent = 'Desconectado';
+  document.getElementById('mqtt-st').className = 'err';
+  document.getElementById('cfg-grupo').value = localStorage.getItem('aps_grupo') || '';
+  document.getElementById('cfg-topic-box').style.display = 'none';
+  document.getElementById('cfg-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('cfg-grupo').select(), 50);
+}
+
+document.getElementById('cfg-btn').addEventListener('click', () => {
+  const grupo = document.getElementById('cfg-grupo').value.trim();
+  if (!grupo) {
+    document.getElementById('cfg-error').style.display = 'block';
+    document.getElementById('cfg-topic-box').style.display = 'none';
+    return;
+  }
+  document.getElementById('cfg-error').style.display = 'none';
+  aplicarGrupo(grupo);
+});
+
+document.getElementById('cfg-grupo').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('cfg-btn').click();
+});
+
+// Mostrar topic dinámicamente mientras el usuario escribe el grupo
+document.getElementById('cfg-grupo').addEventListener('input', () => {
+  const g = document.getElementById('cfg-grupo').value.trim().toUpperCase();
+  const box = document.getElementById('cfg-topic-box');
+  if (g) {
+    document.getElementById('cfg-topic-val').textContent = `indoor_geolocation/${g}/location/result`;
+    document.getElementById('cfg-topic-grupo').textContent = g;
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+});
+
+document.getElementById('btn-reconfig').addEventListener('click', mostrarOverlayGrupo);
+document.getElementById('btn-salir').addEventListener('click', mostrarOverlayGrupo);
+document.getElementById('btn-cobertura').addEventListener('click', toggleCobertura);
+
+// ── Arranque ──────────────────────────────────────────────────────────────
+
+// Muestra un error a pantalla completa. Sin config.json no hay edificio que
+// dibujar, y una pantalla negra sin explicación es el peor fallo posible para
+// alguien que acaba de clonar el repositorio.
+function errorFatal(titulo, detalle) {
+  const ov = document.getElementById('cfg-overlay');
+  ov.innerHTML = `<div id="cfg-box" style="max-width:560px">
+      <h2 style="color:#f66">${titulo}</h2>
+      <p style="text-align:left;white-space:pre-wrap;color:#9ab">${detalle}</p>
+    </div>`;
+  ov.style.display = 'flex';
+}
+
+async function initApp() {
+  // 1. Configuración del edificio y credenciales, desde el servidor
+  let cfg;
+  try {
+    const resp = await fetch('/config.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    cfg = await resp.json();
+  } catch (e) {
+    errorFatal('No se pudo leer la configuración',
+      `El visualizador pidió /config.json y falló: ${e.message}\n\n` +
+      `Arranca el servidor con:\n    python visualizer/servidor_visual.py\n\n` +
+      `y abre la página que él sirve, no el fichero HTML directamente.`);
+    return;
+  }
+
+  if (cfg.error) {
+    errorFatal('Configuración incompleta',
+      `${cfg.error}\n\nRevisa config.yaml en la raíz del repositorio.`);
+    return;
+  }
+
+  if (!cfg.plantas || cfg.plantas.length === 0) {
+    errorFatal('El edificio no tiene plantas',
+      'config.yaml no declara ninguna entrada en `plantas:`.\n\n' +
+      'Copia config.example.yaml y adáptalo a tu edificio.');
+    return;
+  }
+
+  // 2. Volcar la configuración en CFG
+  if (cfg.mqtt) {
+    CFG.mqtt.host = cfg.mqtt.host || '';
+    CFG.mqtt.port = cfg.mqtt.port || 8884;
+    CFG.mqtt.user = cfg.mqtt.user || '';
+    CFG.mqtt.pass = cfg.mqtt.pass || '';
+  }
+  if (cfg.coordOffset) {
+    CFG.coordOffset.x = cfg.coordOffset.x ?? 0;
+    CFG.coordOffset.y = cfg.coordOffset.y ?? 0;
+  }
+  if (cfg.edificio) {
+    CFG.edificio = cfg.edificio;
+    CFG.build.w      = cfg.edificio.ancho_m         || CFG.build.w;
+    CFG.build.d      = cfg.edificio.fondo_m         || CFG.build.d;
+    CFG.build.floorH = cfg.edificio.altura_planta_m || CFG.build.floorH;
+    BW = CFG.build.w; BD = CFG.build.d; FH = CFG.build.floorH;
+    if (cfg.edificio.nombre) {
+      document.title = `Geolocalización 3D — ${cfg.edificio.nombre}`;
+      const b = document.getElementById('branding-course');
+      if (b) b.textContent = cfg.edificio.nombre;
+    }
+    const sub = document.getElementById('branding-subject');
+    if (sub) sub.textContent = cfg.edificio.descripcion || '';
+  }
+
+  // Las plantas llegan ya ordenadas de abajo arriba desde el servidor
+  floorOrder = cfg.plantas.map(p => p.id);
+  for (const p of cfg.plantas) {
+    CFG.floorZ[p.id]    = p.altura_m;
+    CFG.etiquetas[p.id] = p.etiqueta || p.id;
+    if (p.plano)   CFG.textures[p.id] = p.plano;
+    if (p.heatmap) CFG.heatmaps[p.id] = p.heatmap;
+    simetria[p.id] = { x: !!p.simetria_x, y: !!p.simetria_y };
+  }
+
+  // 3. Montar la escena con las dimensiones ya conocidas
+  crearRejilla();
+  floorOrder.forEach((nivel, i) => crearPlanta(nivel, CFG.floorZ[nivel], i, floorOrder.length));
+  centrarMarcador();
+  aplicarVista(vistaGeneral());
+  actualizarTransparencia(floorOrder[0]);
+
+  // El botón de cobertura solo tiene sentido si alguna planta tiene textura
+  const btnCob = document.getElementById('btn-cobertura');
+  if (btnCob && Object.keys(CFG.heatmaps).length === 0) btnCob.style.display = 'none';
+
+  // La leyenda de teclas depende del número de plantas
+  const kh = document.getElementById('keys-plantas');
+  if (kh) {
+    kh.textContent = floorOrder.length > 1
+      ? `1-${Math.min(floorOrder.length, 9)} · plantas`
+      : '';
+  }
+
+  // 4. Conectar con el grupo guardado, o pedirlo
+  const savedGrupo = localStorage.getItem('aps_grupo');
+  if (savedGrupo) {
+    document.getElementById('cfg-grupo').value = savedGrupo;
+    aplicarGrupo(savedGrupo);
+  } else {
+    document.getElementById('cfg-overlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('cfg-grupo').focus(), 100);
+  }
+}
+
+initApp();
+</script>
+</body>
+</html>

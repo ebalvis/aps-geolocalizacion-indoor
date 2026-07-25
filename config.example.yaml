@@ -1,0 +1,120 @@
+# Configuración del edificio. Copia este fichero a config.yaml y adáptalo.
+# No contiene credenciales: esas van en .env (ver .env.example).
+#
+# El visualizador y el servidor leen TODO de aquí. No hay nombres de fichero ni
+# número de plantas cableados en el código: si tu edificio tiene dos plantas o
+# siete, basta con declararlas abajo.
+#
+# Los valores de ejemplo son los del edificio del Politécnico de Ourense, que es
+# el de la publicación y el de los planos incluidos en planos/.
+
+edificio:
+  nombre: "Politécnico de Ourense"
+  descripcion: "Grado en Inteligencia Artificial · Universidade de Vigo"
+
+  # Huella del edificio en metros. Define el tamaño del suelo que dibuja el
+  # visualizador y desde dónde encuadra la cámara.
+  # Se mide sobre el plano:  ancho_m = ancho_px * metros_por_pixel
+  ancho_m: 96
+  fondo_m: 47
+
+  # Separación vertical entre plantas en el render, en metros. No es la altura
+  # real del forjado. Es el valor por defecto: si una planta necesita otra, se
+  # le pone `altura_m` explícita.
+  altura_planta_m: 14
+
+# Una entrada por planta, en el orden que quieras: se ordenan por altura.
+#
+#   id        código corto. Es lo que el servidor de estimación manda en el
+#             campo `nivel` del mensaje MQTT, y lo que se usa en CSV y carpetas.
+#   etiqueta  nombre legible, para el visualizador y los informes.
+#   imagen    plano de la planta, relativo a la raíz del repositorio.
+#             Vale PNG, JPG o WEBP.
+#   heatmap   (opcional) textura de cobertura WiFi. Si falta, esa planta no
+#             tiene capa de cobertura y el resto sigue funcionando.
+#   altura_m  (opcional) altura en metros. Si falta, se calcula con
+#             altura_planta_m según el orden de declaración.
+#   metros_por_pixel  escala del plano. Se calibra midiendo sobre la imagen una
+#             distancia real conocida:  mpp = distancia_m / distancia_px
+#   origen_px [columna, fila] del origen de coordenadas, en píxeles del plano.
+#   simetria_x / simetria_y  ejes a invertir si el plano está espejado respecto
+#             al sistema de coordenadas con el que mides.
+plantas:
+  - id: "1P"
+    etiqueta: "Primera planta"
+    imagen: "planos/andar1.png"
+    heatmap: "visualizer/heatmaps/andar1_heat.png"
+    metros_por_pixel: 0.0312
+    origen_px: [1407, 1492]
+    simetria_x: false
+    simetria_y: true
+
+  - id: "2P"
+    etiqueta: "Segunda planta"
+    imagen: "planos/andar2.png"
+    heatmap: "visualizer/heatmaps/andar2_heat.png"
+    metros_por_pixel: 0.0312
+    origen_px: [1407, 1492]
+    simetria_x: false
+    simetria_y: true
+
+  - id: "3P"
+    etiqueta: "Tercera planta"
+    imagen: "planos/andar3.png"
+    heatmap: "visualizer/heatmaps/andar3_heat.png"
+    metros_por_pixel: 0.0312
+    origen_px: [1407, 1492]
+    simetria_x: false
+    simetria_y: true
+
+# Ajuste fino del origen en el visualizador 3D, en metros. Sirve para cuadrar
+# las coordenadas que publica el servidor con el suelo dibujado, sin tener que
+# recalibrar origen_px.
+visualizador:
+  coord_offset_x: 42.5
+  coord_offset_y: -1.47
+
+# Modelo de propagación log-distancia:  P(d) = A - 10*n*log10(d)
+#   A  potencia recibida a un metro, en dBm
+#   n  exponente de pérdidas del entorno
+# Los valores de ejemplo se calibraron por regresión sobre las medidas del
+# edificio (MAE 6,3 m). Los tuyos saldrán de tu propia campaña de medidas: el
+# procedimiento está en docs/modelo-propagacion.md.
+#
+# `puntos_acceso` son coordenadas [x, y] en metros. Solo las usa
+# gen_heatmap_texturas.py para dibujar el mapa de cobertura simulado.
+#
+# ATENCIÓN: estas cinco NO son posiciones medidas de antenas reales. Son
+# posiciones ilustrativas, colocadas a mano para que la figura de cobertura se
+# entienda. La antena real más cercana a cada una está entre 4,6 y 30,8 m. La
+# base de antenas de verdad la levanta cada equipo en el hito 1, y la
+# localización no usa estos valores para nada.
+modelo:
+  A: -60.99
+  n: 2.22
+  puntos_acceso:
+    - [-31.0, 31.6]
+    - [5.5, 30.9]
+    - [37.0, 31.8]
+    - [-13.5, 16.5]
+    - [1.5, 6.0]
+
+# Ruta que recorre el simulador, en metros. Sirve para ver el visualizador
+# funcionando sin hardware. Adáptala a los pasillos de tu edificio.
+simulador:
+  planta_inicial: "1P"
+  velocidad_ms: 1.2
+  periodo_s: 2.0
+  ruta:
+    - [44.0, 32.3]
+    - [30.0, 32.3]
+    - [14.0, 32.3]
+    - [0.0, 32.3]
+    - [-13.0, 32.3]
+    - [-17.5, 30.0]
+    - [-17.5, 23.0]
+    - [-17.5, 17.0]
+    - [-15.0, 15.8]
+    - [-10.0, 15.5]
+    - [-6.0, 15.8]
+    - [-2.5, 14.7]

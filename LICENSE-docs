@@ -1,0 +1,55 @@
+Creative Commons Atribución 4.0 Internacional (CC BY 4.0)
+
+Copyright (c) 2026 Eduardo Balvís Outeiriño, María Novo-Lourés,
+Anália M. García Lourenço (Universidade de Vigo)
+
+Esta licencia cubre el material docente y gráfico de este repositorio:
+
+  docs/     enunciados de las prácticas B1-B7, guías del proyecto, manuales
+            y documentación técnica
+  planos/   planos del edificio con cuadrícula métrica
+
+El código fuente NO se rige por esta licencia, sino por la MIT del fichero
+LICENSE. Afecta a: firmware/, server/, simulator/, visualizer/ y a cualquier
+fichero .py, .js, .html o .bat del repositorio, incluidos los que estén dentro
+de las carpetas indicadas arriba.
+
+--------------------------------------------------------------------------
+
+Eres libre de:
+
+  COMPARTIR  copiar y redistribuir el material en cualquier medio o formato.
+  ADAPTAR    remezclar, transformar y construir a partir del material para
+             cualquier finalidad, incluso comercial.
+
+El licenciador no puede revocar estas libertades mientras cumplas los términos
+de la licencia.
+
+Bajo los siguientes términos:
+
+  ATRIBUCIÓN            Debes reconocer la autoría de forma adecuada,
+                        proporcionar un enlace a la licencia e indicar si se
+                        han realizado cambios. Puedes hacerlo de cualquier
+                        forma razonable, pero no de una manera que sugiera que
+                        tienes el apoyo del licenciador o lo recibes por el uso
+                        que haces.
+
+  SIN RESTRICCIONES     No puedes aplicar términos legales ni medidas
+  ADICIONALES           tecnológicas que restrinjan legalmente a otras a hacer
+                        cualquier uso permitido por la licencia.
+
+Texto legal completo:
+https://creativecommons.org/licenses/by/4.0/legalcode.es
+
+Resumen para no juristas:
+https://creativecommons.org/licenses/by/4.0/deed.es
+
+--------------------------------------------------------------------------
+
+Atribución sugerida:
+
+  Balvís Outeiriño, E., Novo-Lourés, M., y García Lourenço, A. M. (2026).
+  Geolocalización indoor multisensor (APS). Universidade de Vigo.
+  Material docente bajo licencia CC BY 4.0.
+
+Los datos de cita en formato legible por máquina están en CITATION.cff.
