@@ -2,6 +2,17 @@
 
 El formato sigue el criterio de versionado semántico.
 
+## [1.1.0] - 2026-07-29
+
+Añadidos, sin cambios en el sistema ni en los resultados. La versión 1.0.0 se
+mantiene intacta porque es la que cita la comunicación de EDUTRENDS 2026.
+
+- `docs/guion-laboratorio.pdf`: guion de conducción de las trece sesiones, con
+  qué preparar antes de cada una, en qué se comprueba que ha salido y los fallos
+  habituales. Complementa a `docs/guia-profesor.md`, que cubre la adopción.
+- Resumen en inglés al principio del README, con el aviso de que el material
+  está en castellano.
+
 ## [1.0.0] - 2026-07-25
 
 Primera versión pública. Corresponde al artículo y a la presentación de EDUTRENDS

@@ -1,5 +1,19 @@
 # Geolocalización indoor multisensor (APS)
 
+> **In English.** An open platform for a signal-processing lab course: student teams
+> build an indoor positioning system for their own building. A M5StickC Plus 2 measures
+> WiFi signal strength and publishes it over MQTT, a Python server estimates the
+> position, and a Three.js viewer shows it live in the browser. The viewer adapts to any
+> building through a single config file — floors, plans, heights and scale.
+>
+> The teaching material is deliberately incomplete: the signal-processing core is left
+> as marked `TODO`s, because that is what the course assesses. See *Qué está terminado y
+> qué no* below.
+>
+> **All documentation and code comments are in Spanish**, including the seven lab
+> handouts and the project guides. The identifiers in the code are Spanish too. Code is
+> MIT-licensed, teaching material CC BY 4.0.
+
 Plataforma abierta para una práctica de laboratorio de la asignatura Adquisición y
 Procesamiento de la Señal, del Grado en Inteligencia Artificial de la Universidade de Vigo (Escola Superior de Enxeñaría Informática,
 Ourense).
@@ -39,7 +53,9 @@ la especificación completa en `CHANGELOG.md`.
 
 **Si vas a impartirlo, empieza por [`docs/guia-profesor.md`](docs/guia-profesor.md)**: de
 la primera prueba sin hardware a la entrega final, incluida la calibración de tus planos
-y la campaña de medidas.
+y la campaña de medidas. Y después, [`docs/guion-laboratorio.pdf`](docs/guion-laboratorio.pdf),
+que baja al detalle de cada una de las trece sesiones: qué dejar preparado, en qué se
+comprueba que ha salido y qué suele torcerse.
 
 ## Qué está terminado y qué no
 
