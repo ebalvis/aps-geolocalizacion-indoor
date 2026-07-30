@@ -25,6 +25,10 @@ license:
   - CC-BY-4.0
 version: "1.1.1"
 date-released: 2026-07-30
+# DOI de concepto: resuelve siempre a la versión más reciente. El de la v1.1.1
+# es 10.5281/zenodo.21700905.
+doi: "10.5281/zenodo.21700904"
+repository-code: "https://github.com/ebalvis/aps-geolocalizacion-indoor"
 references:
   - type: conference-paper
     title: >-

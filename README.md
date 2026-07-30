@@ -1,5 +1,9 @@
 # Geolocalización indoor multisensor (APS)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21700904.svg)](https://doi.org/10.5281/zenodo.21700904)
+[![Licencia: MIT](https://img.shields.io/badge/c%C3%B3digo-MIT-b68235)](LICENSE)
+[![Licencia: CC BY 4.0](https://img.shields.io/badge/documentaci%C3%B3n-CC%20BY%204.0-b68235)](LICENSE-docs)
+
 > **In English.** An open platform for a signal-processing lab course: student teams
 > build an indoor positioning system for their own building. A M5StickC Plus 2 measures
 > WiFi signal strength and publishes it over MQTT, a Python server estimates the
@@ -161,7 +165,19 @@ En ambos casos puedes reutilizarlo, incluso con fines comerciales, citando la fu
 
 ## Cómo citar
 
-Ver `CITATION.cff`.
+El repositorio está archivado en Zenodo, así que la cita no depende de que esta URL de
+GitHub siga existiendo:
+
+> Balvís Outeiriño, E., Novo-Lourés, M. y García Lourenço, A. M. (2026).
+> *Geolocalización indoor multisensor (APS): plataforma abierta para una práctica de
+> laboratorio*. Zenodo. https://doi.org/10.5281/zenodo.21700904
+
+Ese DOI es el **de concepto**: apunta siempre a la versión más reciente. Para citar una
+versión concreta, usa su propio DOI; el de la v1.1.1 es
+[10.5281/zenodo.21700905](https://doi.org/10.5281/zenodo.21700905).
+
+Los resultados de la comunicación de EDUTRENDS 2026 corresponden a la **v1.0.0**. Los
+datos de cita en formato legible por máquina están en `CITATION.cff`.
 
 ## Contacto
 
