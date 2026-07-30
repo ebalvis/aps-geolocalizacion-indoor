@@ -1,0 +1,47 @@
+{
+  "upload_type": "software",
+  "title": "Geolocalización indoor multisensor (APS): plataforma abierta para una práctica de laboratorio",
+  "language": "spa",
+  "license": "MIT",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Balvís Outeiriño, Eduardo",
+      "affiliation": "Universidade de Vigo, Escola Superior de Enxeñaría Informática, Ourense"
+    },
+    {
+      "name": "Novo-Lourés, María",
+      "affiliation": "Universidade de Vigo, Instituto de Investigaciones Sanitarias Galicia Sur"
+    },
+    {
+      "name": "García Lourenço, Anália M.",
+      "affiliation": "Universidade de Vigo, Instituto de Investigaciones Sanitarias Galicia Sur"
+    }
+  ],
+  "description": "<p>Plataforma abierta para una práctica de laboratorio de la asignatura Adquisición y Procesamiento de la Señal, del Grado en Inteligencia Artificial de la Universidade de Vigo (Escola Superior de Enxeñaría Informática, Ourense).</p><p>Cada equipo construye de principio a fin un sistema de localización en interiores sobre el propio edificio: un M5StickC Plus 2 mide la potencia de las redes WiFi y la publica por MQTT, un servidor en Python estima la posición y un visualizador tridimensional en Three.js muestra el resultado en tiempo real. El problema recorre la cadena completa de tratamiento de señal: adquisición con hardware real, filtrado del ruido, calibración de un modelo de propagación, extracción de características y fusión de sensores.</p><p>El visualizador se adapta a cualquier edificio desde un único fichero de configuración: número de plantas, planos, alturas y escala. Se ha verificado con dos, tres y cinco plantas, con alturas irregulares y con plantas sin plano.</p><p><strong>Material docente incompleto a propósito.</strong> El núcleo de tratamiento de señal se entrega como esqueletos con las partes evaluables marcadas, porque son precisamente lo que la asignatura evalúa. Lo que funciona sin escribir código es la cadena simulador, broker y visualizador.</p><p>Incluye las siete prácticas de laboratorio en PDF, las guías del proyecto, los planos del edificio con su sistema de coordenadas, una guía para el profesorado que quiera adoptarlo y el guion de conducción de las trece sesiones.</p><p>Doble licencia: MIT para el código y CC BY 4.0 para el material docente y los planos.</p><p>Material asociado a la comunicación presentada en EDUTRENDS 2026.</p>",
+  "keywords": [
+    "geolocalización indoor",
+    "huella de radiofrecuencia",
+    "WiFi fingerprinting",
+    "navegación inercial",
+    "dead reckoning",
+    "procesamiento de señal",
+    "sistemas empotrados",
+    "MicroPython",
+    "ESP32",
+    "MQTT",
+    "internet de las cosas",
+    "aprendizaje basado en proyectos",
+    "material docente abierto",
+    "innovación docente"
+  ],
+  "notes": "Los resultados publicados en la comunicación de EDUTRENDS 2026 corresponden a la versión 1.0.0 y son solo de WiFi: el sistema de referencia usa la unidad inercial como filtro temporal, no como sensor de posición. La navegación inercial figura en esta versión como material docente y ejercicio.",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/ebalvis/aps-geolocalizacion-indoor",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}
