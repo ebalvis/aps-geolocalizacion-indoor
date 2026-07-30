@@ -11,12 +11,15 @@ authors:
   - family-names: "Balvís Outeiriño"
     given-names: "Eduardo"
     affiliation: "Universidade de Vigo"
+    orcid: "https://orcid.org/0000-0003-0195-0502"
   - family-names: "Novo-Lourés"
     given-names: "María"
     affiliation: "Universidade de Vigo"
+    orcid: "https://orcid.org/0000-0003-2000-0449"
   - family-names: "García Lourenço"
     given-names: "Anália M."
     affiliation: "Universidade de Vigo"
+    orcid: "https://orcid.org/0000-0001-8401-5362"
 license:
   - MIT
   - CC-BY-4.0
@@ -30,9 +33,12 @@ references:
     authors:
       - family-names: "Balvís Outeiriño"
         given-names: "Eduardo"
+        orcid: "https://orcid.org/0000-0003-0195-0502"
       - family-names: "Novo-Lourés"
         given-names: "María"
+        orcid: "https://orcid.org/0000-0003-2000-0449"
       - family-names: "García Lourenço"
         given-names: "Anália M."
+        orcid: "https://orcid.org/0000-0001-8401-5362"
     collection-title: "EDUTRENDS 2026"
     year: 2026
