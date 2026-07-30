@@ -74,6 +74,13 @@ MQTT_SSL      = True
 
 EQUIPO        = "___EQUIPO___"           # p.ej. "e01" — el asignado en Moovi
 
+# Umbral de potencia por debajo del cual una red no se tiene en cuenta. Es el
+# mismo en las tres piezas del sistema —registrador, cliente y servidor— y el
+# que exige el criterio 1 de la evaluación: si aquí se sube y en el servidor
+# no, cada uno trabaja con un conjunto distinto de antenas y las métricas
+# dejan de ser comparables entre equipos.
+RSSI_MIN      = -90                      # dBm
+
 # Topics derivados (NO modificar la estructura). Son los mismos que usan el
 # servidor, el simulador y el visualizador 3D: si los cambias aquí y no allí,
 # la cadena se rompe sin dar ningún error.
@@ -275,7 +282,7 @@ def escanear_wifi(sta_if):
         bssid_bytes = red[1]
         bssid_str = ":".join("{:02x}".format(b) for b in bssid_bytes)
         rssi = red[3]
-        if rssi >= -90:   # filtro muy laxo; en H2 ya filtrasteis a -85
+        if rssi >= RSSI_MIN:
             resultado.append({"BSSID": bssid_str, "potencia": rssi})
     return resultado
 

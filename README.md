@@ -5,7 +5,7 @@
 [![Licencia: CC BY 4.0](https://img.shields.io/badge/documentaci%C3%B3n-CC%20BY%204.0-b68235)](LICENSE-docs)
 
 > **In English.** An open platform for a signal-processing lab course: student teams
-> build an indoor positioning system for their own building. A M5StickC Plus 2 measures
+> build an indoor positioning system for their own building. An M5StickC Plus 2 measures
 > WiFi signal strength and publishes it over MQTT, a Python server estimates the
 > position, and a Three.js viewer shows it live in the browser. The viewer adapts to any
 > building through a single config file — floors, plans, heights and scale.
@@ -33,10 +33,13 @@ sensores.
 Este repositorio contiene el material que se cita como abierto en la comunicación
 presentada en EDUTRENDS 2026 (ver `CITATION.cff`).
 
-**Versión 1.0** (curso 2026-2027). Corresponde al artículo y a la presentación de
-EDUTRENDS 2026, y **los resultados que se publican allí son solo de WiFi**: el sistema
-de referencia estima la posición a partir de los escaneos y usa la IMU como filtro
-temporal, no como sensor de posición.
+**Línea 1 del material** (curso 2026-2027), publicada como versión 1.2.0. Los resultados
+de la comunicación de EDUTRENDS 2026 corresponden a la v1.0.0 y **son solo de WiFi**: el
+sistema de referencia estima la posición a partir de los escaneos y usa la IMU como
+filtro temporal, no como sensor de posición. De la v1.0.0 a la v1.2.0 se añadieron el
+guion de laboratorio y los metadatos del depósito, se unificó el umbral de potencia y se
+rehízo la documentación con la identidad visual de la asignatura; el método de estimación
+y los resultados numéricos no cambiaron. El detalle, en `CHANGELOG.md`.
 
 La navegación inercial sí está en esta versión, pero **como ejercicio**: las prácticas
 B4 y B7 la explican y el `TODO 8` del cliente pide implementarla. Lo que traerá la
@@ -51,9 +54,9 @@ la especificación completa en `CHANGELOG.md`.
 | `server/` | Esqueleto del servidor de estimación en Python (agregación, k-NN, fusión WiFi + PDR). |
 | `simulator/` | Simulador que publica posiciones sin necesidad de hardware, para probar el visualizador. |
 | `visualizer/` | Visualizador 3D del edificio en Three.js, su servidor HTTP y las texturas de cobertura. |
-| `planos/` | Plano con cuadrícula métrica y sistema de coordenadas (ejemplo, planta 3ª). |
-| `docs/` | Arquitectura, modelo de propagación, protocolo MQTT y guía de MicroPython. |
-| `docs/practicas/` | Las prácticas de laboratorio B1–B7 y el proyecto integrador (PDF). |
+| `planos/` | Los tres planos del edificio de ejemplo, más uno con cuadrícula métrica y el sistema de coordenadas marcado. |
+| `docs/` | Guía del profesorado, guion de laboratorio, arquitectura, modelo de propagación, protocolo MQTT, guía de MicroPython y manual de UIFlow 2. |
+| `docs/practicas/` | Las siete prácticas B1–B7 en PDF, el enunciado y el calendario del proyecto, y en `guias/` las de los dos primeros hitos y los criterios de evaluación. |
 
 **Si vas a impartirlo, empieza por [`docs/guia-profesor.md`](docs/guia-profesor.md)**: de
 la primera prueba sin hardware a la entrega final, incluida la calibración de tus planos
@@ -137,10 +140,11 @@ El procedimiento completo (planos, escala, origen de coordenadas) está en
 
 ## Firmware y servidor (con hardware)
 
-El firmware se copia al M5StickC Plus 2 (MicroPython) y se editan en el propio
-fichero el SSID, la contraseña del WiFi y los datos del broker. El servidor lee sus
-credenciales de `.env`. Los pasos completos están en `firmware/README.md` y
-`server/README.md`.
+El firmware se copia al M5StickC Plus 2 (MicroPython). Sus credenciales van en el propio
+fichero, porque MicroPython no tiene `.env`: los esqueletos vienen con marcadores
+`___MQTT_USER___` y cada equipo pone ahí las suyas en su copia. **En el material que se
+reparte, los marcadores se quedan como están.** El servidor sí lee las suyas de `.env`.
+Los pasos completos están en `firmware/README.md` y `server/README.md`.
 
 ## Sobre el mapa de cobertura WiFi
 
@@ -172,13 +176,14 @@ GitHub siga existiendo:
 > *Geolocalización indoor multisensor (APS): plataforma abierta para una práctica de
 > laboratorio*. Zenodo. https://doi.org/10.5281/zenodo.21700904
 
-Ese DOI es el **de concepto**: apunta siempre a la versión más reciente. Para citar una
-versión concreta, usa su propio DOI; el de la v1.1.1 es
-[10.5281/zenodo.21700905](https://doi.org/10.5281/zenodo.21700905).
+Ese DOI es el **de concepto**: apunta siempre a la versión archivada más reciente, que
+hoy es la v1.1.1, con DOI propio
+[10.5281/zenodo.21700905](https://doi.org/10.5281/zenodo.21700905). Para citar una
+versión concreta se usa su DOI, no el de concepto.
 
 Los resultados de la comunicación de EDUTRENDS 2026 corresponden a la **v1.0.0**. Los
 datos de cita en formato legible por máquina están en `CITATION.cff`.
 
 ## Contacto
 
-Eduardo Balvís Outeiriño, Universidade de Vigo. Correo: ebalvis@gmail.com
+Eduardo Balvís Outeiriño, Universidade de Vigo. Correo: ebalvis@uvigo.gal

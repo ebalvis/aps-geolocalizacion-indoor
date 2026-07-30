@@ -84,7 +84,8 @@ if _faltan:
 # Parámetros del algoritmo
 N_BUFFER_MAX   = 5       # tamaño máximo del buffer de escaneos en estado 'quieto'
 K_NN           = 3       # vecinos en k-NN
-RSSI_MIN       = -85     # dBm, umbral mínimo para considerar una antena visible
+RSSI_MIN       = -90     # dBm, umbral mínimo para considerar una antena visible.
+                         # El mismo que el registrador y el cliente.
 MIN_BSSIDS     = 2       # solapamiento mínimo (BSSIDs comunes) con un fingerprint
 
 # Parámetros de fusión WiFi + PDR (TODO 6)

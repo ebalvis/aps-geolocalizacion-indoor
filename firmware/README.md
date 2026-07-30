@@ -51,12 +51,12 @@ y al reiniciar continúa por donde iba.
 
 Tres formas de descargar, desde el menú:
 
-- **Punto de acceso** — el M5 crea su propia red `APS-Logger-XXXX` y sirve en
+- **Punto de acceso**: el M5 crea su propia red `APS-Logger-XXXX` y sirve en
   `http://192.168.4.1`. Funciona en un aula sin red, que es lo habitual.
-- **WiFi local** — el M5 se conecta a la red del aula y sirve la misma web.
-- **USB por serie** — desde el PC, con `descargar_wifi_log.py` o el `.bat`.
+- **WiFi local**: el M5 se conecta a la red del aula y sirve la misma web.
+- **USB por serie**: desde el PC, con `descargar_wifi_log.py` o el `.bat`.
 
-Descarta redes por debajo de −95 dBm y comprueba que quede espacio en flash.
+Descarta redes por debajo de −90 dBm y comprueba que quede espacio en flash.
 
 ## App 2: cliente en tiempo real
 

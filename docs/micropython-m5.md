@@ -1,8 +1,12 @@
 # Programar el M5StickC en MicroPython (UIFlow 2.0)
 
-Guía práctica para empezar desde cero con el M5StickC Plus 1.1 y el firmware
+Guía práctica para empezar desde cero con el M5StickC Plus 2 y el firmware
 UIFlow 2.0. Para la referencia completa de la API, ver `Manual_UIFlow2_Completo.pdf`
 en esta misma carpeta.
+
+Los ejemplos usan `Widgets` y `M5.Lcd`, que son del MicroPython moderno del Plus 2. En
+el Plus 1.1, con UIFlow 1.x, la pantalla se maneja con otra API (`lcd.font`, `lcd.print`)
+y estos ejemplos no valen tal cual.
 
 ## 1. Preparar el dispositivo
 
@@ -61,7 +65,9 @@ lbl.setColor(0x00FF00, 0x111111)   # color de letra y de fondo
 Widgets.fillScreen(0x111111)       # limpiar
 ```
 
-Los colores son enteros `0xRRGGBB`. La pantalla del Plus 1.1 es de 135×240 píxeles;
+Los colores son enteros `0xRRGGBB`. La pantalla es de 135×240 píxeles en vertical, que es
+como arranca; el firmware de las prácticas la gira a horizontal con
+`M5.Display.setRotation(1)` y pasa a ser de 240×135. Conviene tenerlo presente:
 conviene no pasarse con el tamaño del texto.
 
 ## 5. Botones

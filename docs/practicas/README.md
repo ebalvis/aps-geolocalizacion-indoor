@@ -16,11 +16,16 @@ el sistema de geolocalización. Se publican bajo licencia CC BY 4.0.
 
 ## Proyecto integrador
 
-- `Proyecto_enunciado_y_calendario.pdf`: enunciado, hitos y calendario.
+- `Proyecto_enunciado.pdf`: enunciado del proyecto y sus hitos.
+- `Proyecto_calendario.pdf`: calendario de sesiones y entregas.
 - `guias/H1_toma_de_datos.pdf`, `guias/H2_geolocalizacion_basica.pdf`: los dos
   primeros hitos paso a paso.
-- `guias/criterios_evaluacion.pdf`, `guias/hoja_evaluacion.pdf`: qué se evalúa.
+- `guias/criterios_evaluacion.pdf`: qué se evalúa y con qué peso.
 - `guias/guia_plataforma.pdf`: uso de la plataforma y el visualizador.
+
+La hoja de evaluación de la defensa, con el banco de preguntas y sus respuestas
+modelo, es material del profesorado y no se publica aquí. Está descrita en
+`../guia-profesor.md`.
 
 ## Cómo encaja con el código
 

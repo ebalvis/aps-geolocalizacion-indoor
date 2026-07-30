@@ -44,7 +44,9 @@ except Exception:
 # ===================== CONFIGURACIÓN =====================
 LOG_FILE      = "/flash/wifi_log.csv"
 SCAN_INTERVAL = 3000     # ms entre escaneos durante la grabación
-RSSI_MIN      = -95      # dBm; descarta redes por debajo de este nivel
+RSSI_MIN      = -90      # dBm; descarta redes por debajo de este nivel.
+                         # Mismo umbral en todo el sistema: registrador,
+                         # cliente y servidor. Ver docs/protocolo-mqtt.md.
 
 # Para la opción "WiFi local": red del aula con salida a internet.
 WIFI_SSID     = "TU_SSID_WIFI"

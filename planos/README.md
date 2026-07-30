@@ -22,7 +22,7 @@ Se publican bajo licencia CC BY 4.0 (ver `../LICENSE-docs`).
 2. Declara una entrada por planta en `plantas:`, apuntando `imagen:` a cada fichero. No
    hay número fijo de plantas ni nombres obligatorios.
 3. **Calibra la escala.** Mide sobre la imagen, en píxeles, una distancia real que
-   conozcas —un pasillo, la separación entre dos pilares— y calcula:
+   conozcas, por ejemplo un pasillo o la separación entre dos pilares, y calcula:
 
    ```
    metros_por_pixel = distancia_real_m / distancia_medida_px

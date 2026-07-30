@@ -12,6 +12,7 @@ authors:
     given-names: "Eduardo"
     affiliation: "Universidade de Vigo"
     orcid: "https://orcid.org/0000-0003-0195-0502"
+    email: "ebalvis@uvigo.gal"
   - family-names: "Novo-Lourés"
     given-names: "María"
     affiliation: "Universidade de Vigo"
@@ -23,8 +24,8 @@ authors:
 license:
   - MIT
   - CC-BY-4.0
-version: "1.1.1"
-date-released: 2026-07-30
+version: "1.2.0"
+date-released: 2026-07-31
 # DOI de concepto: resuelve siempre a la versión más reciente. El de la v1.1.1
 # es 10.5281/zenodo.21700905.
 doi: "10.5281/zenodo.21700904"

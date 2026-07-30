@@ -33,9 +33,13 @@ montar el proyecto entero, y eso funciona.
 
 **Hardware, por equipo de dos personas:**
 
-- Un M5StickC Plus 2 (o Plus 1.1) con firmware UIFlow 2.0. Es lo único imprescindible.
+- Un M5StickC **Plus 2** con firmware UIFlow 2.0. Es lo único que no puede faltar.
 - Unidad ENV III en el puerto Grove, si quieres usar el barómetro para distinguir
   plantas. Opcional.
+
+Sobre el Plus 1.1: el registrador WiFi del hito 1 funciona en él, pero **el cliente que
+programa el alumnado, no**. Usa la API `M5.Lcd` del MicroPython moderno, que es del Plus
+2. Si vas a comprar dispositivos, compra Plus 2.
 
 **Infraestructura:**
 
@@ -46,8 +50,14 @@ montar el proyecto entero, y eso funciona.
   navegador.
 - Los planos de tu edificio, una imagen por planta.
 
-**Software:** Python 3.11 o superior y un navegador. El visualizador carga Three.js y el
-cliente MQTT desde CDN, así que la primera vez hace falta conexión a internet.
+**Software:** Python 3.10 o superior (probado con 3.11) y un navegador.
+
+El visualizador carga Three.js y el cliente MQTT desde CDN, así que **el equipo que abre
+el navegador necesita salida a internet cada vez**, no solo la primera. En un aula con la
+red filtrada esto es lo primero que falla, y se ve como una pantalla en negro. Si te pasa,
+descarga los tres ficheros que declara la cabecera de `visualizer/visualizador3d.html`,
+déjalos junto al HTML y cambia las tres URL por rutas relativas: el resto del sistema no
+necesita internet para nada.
 
 ---
 
@@ -97,8 +107,8 @@ nombres, ni las dimensiones están en el programa.
 **Paso 1. Los planos.** Consigue una imagen por planta, en PNG, JPG o WEBP, y déjala en
 `planos/`. El nombre da igual.
 
-**Paso 2. La escala.** Mide sobre la imagen, en píxeles, una distancia real que conozcas
-—un pasillo, la separación entre dos pilares—:
+**Paso 2. La escala.** Mide sobre la imagen, en píxeles, una distancia real que conozcas:
+un pasillo, la separación entre dos pilares.
 
 ```
 metros_por_pixel = distancia_real_m / distancia_medida_px
@@ -156,12 +166,12 @@ python visualizer/gen_heatmap_texturas.py
 1. Instala UIFlow 2.0 en el M5StickC con M5Burner y ponlo en modo USB/MicroPython.
 2. Copia `firmware/app1_wifi_logger/wifi_logger.py` al dispositivo con Thonny, el IDE web
    de UIFlow o `mpremote`.
-3. Para que arranque solo al encender, guárdalo como `main.py`.
+3. Para que arranque solo al encender, cópialo como `main.py` en vez de con su nombre.
 
-Con `mpremote`, desde el PC:
+Con `mpremote`, desde el PC, copiándolo como `main.py` para que arranque solo:
 
 ```bash
-python -m mpremote connect COM11 fs cp wifi_logger.py :wifi_logger.py
+python -m mpremote connect COM11 fs cp wifi_logger.py :main.py
 ```
 
 El puerto es el del puente serie del M5: en Windows aparece como `USB-Enhanced-SERIAL
@@ -189,17 +199,17 @@ dispositivo numera solo, pero no sabe dónde está.
 | Grabando | para | — |
 | Menú | cambia de opción | elige |
 
-Escanea cada tres segundos y descarta redes por debajo de −95 dBm. Todo se acumula en
+Escanea cada tres segundos y descarta redes por debajo de −90 dBm. Todo se acumula en
 `/flash/wifi_log.csv`, con el número de punto en cada fila. Al reiniciar continúa por
 donde iba, así que una campaña puede repartirse en varios días.
 
 **Descarga**, desde el menú del botón B:
 
-- **Punto de acceso** — el M5 crea su propia red `APS-Logger-XXXX`. Conectas el portátil
+- **Punto de acceso**: el M5 crea su propia red `APS-Logger-XXXX`. Conectas el portátil
   y descargas desde `http://192.168.4.1`. **Es la que funciona siempre**, incluso en un
   aula sin red o con la red del centro filtrada.
-- **WiFi local** — el M5 se conecta a la red del aula y sirve la misma web.
-- **USB por serie** — desde el PC.
+- **WiFi local**: el M5 se conecta a la red del aula y sirve la misma web.
+- **USB por serie**: desde el PC.
 
 Consejos que ahorran una sesión perdida: más puntos y mejor repartidos importa más que
 grabar mucho rato en cada uno; el mapa de radio poco denso es justo lo que hace que el
@@ -254,8 +264,14 @@ barómetro para la planta, B5 el acondicionamiento de señal, B6 el fingerprinti
 fusión.
 
 El proyecto corre en paralelo con tres hitos: recolección, procesado y demostración en
-vivo. Enunciado y calendario en `practicas/Proyecto_enunciado_y_calendario.pdf`; los
-criterios y la hoja de evaluación, en `practicas/guias/`.
+vivo. Enunciado en `practicas/Proyecto_enunciado.pdf`, calendario en
+`practicas/Proyecto_calendario.pdf` y criterios de evaluación en
+`practicas/guias/criterios_evaluacion.pdf`.
+
+Hay además una hoja de evaluación de la defensa, con el banco de preguntas y sus
+respuestas modelo, que **no se publica en este repositorio**: sirve para que la
+evaluación sea la misma para todos los equipos, y pierde su sentido si el alumnado la
+lee antes. Quien adopte el material y la quiera, que la pida a ebalvis@uvigo.gal.
 
 Dos decisiones del diseño original que merece la pena conservar:
 
