@@ -2,6 +2,16 @@
 
 El formato sigue el criterio de versionado semántico.
 
+## [1.1.1] - 2026-07-30
+
+Solo metadatos: ni el código ni el material cambian. Es la primera versión que
+se archiva en Zenodo, y por eso lleva la ficha del depósito completa.
+
+- `.zenodo.json` con los metadatos del depósito: tipo, título, autoría con
+  filiación, descripción, palabras clave y licencia.
+- Los ORCID de las tres personas autoras, verificados contra el registro
+  público, en `.zenodo.json` y en `CITATION.cff`.
+
 ## [1.1.0] - 2026-07-29
 
 Añadidos, sin cambios en el sistema ni en los resultados. La versión 1.0.0 se

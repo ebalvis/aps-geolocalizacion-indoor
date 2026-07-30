@@ -23,8 +23,8 @@ authors:
 license:
   - MIT
   - CC-BY-4.0
-version: "1.1.0"
-date-released: 2026-07-29
+version: "1.1.1"
+date-released: 2026-07-30
 references:
   - type: conference-paper
     title: >-
